@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         if (id == R.id.menu_sort_popularity) {
-            if (sortingMode.equals(NetworkUtils.PATH_POPULAR) ) {
+            if (!sortingMode.equals(NetworkUtils.PATH_POPULAR) ) {
                 // Reload only if the mode changed
                 sortingMode = NetworkUtils.PATH_POPULAR;
                 loadData();
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         if (id == R.id.menu_sort_rating) {
-            if (sortingMode.equals(NetworkUtils.PATH_RATING)) {
+            if (!sortingMode.equals(NetworkUtils.PATH_RATING)) {
                 // Reload only if the mode changed
                 sortingMode = NetworkUtils.PATH_RATING;
                 loadData();
