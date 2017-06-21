@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private RecyclerView mRecyclerView;
     private MovieAdapter mAdapter;
-    private ProgressBar mLoadingIndicator;
+    private ProgressBar mProgressLoading;
     private TextView mErrorMessageDisplay;
     // Hold the current sorting mode
     private String sortingMode;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         setContentView(R.layout.activity_main);
 
         // Set up views
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        mProgressLoading = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_discovery);
 
@@ -57,17 +57,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         new FetchMovieDataTask().execute(sortingMode);
     }
 
-    public class FetchMovieDataTask extends AsyncTask<String, Void, MovieData[]> {
+    private class FetchMovieDataTask extends AsyncTask<String, Void, MovieData[]> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             // Show loading indicator at start
-            mLoadingIndicator.setVisibility(View.VISIBLE);
+            mProgressLoading.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected MovieData[] doInBackground(String... params) {
+            MovieData [] parsedData;
             // Exit if no parameter was passed
             if (params.length == 0) {
                 return null;
@@ -79,8 +80,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             Log.d("DEBUG", movieRequestUrl.toString());
             try {
                 // Get the response and parse
-                String jsonWeatherResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
-                MovieData[] parsedData = JsonUtils.getMovieDataFromJson(MainActivity.this, jsonWeatherResponse);
+                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
+                parsedData = JsonUtils.getMovieDataFromJson(MainActivity.this, jsonMovieResponse);
                 return parsedData;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         @Override
         protected void onPostExecute(MovieData[] data) {
             // Hide loading indicator
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
+            mProgressLoading.setVisibility(View.INVISIBLE);
             if (data != null) {
                 // Show the posters view
                 showMoviePostersView();
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         if (id == R.id.menu_sort_popularity) {
-            if (sortingMode != NetworkUtils.PATH_POPULAR) {
+            if (sortingMode.equals(NetworkUtils.PATH_POPULAR) ) {
                 // Reload only if the mode changed
                 sortingMode = NetworkUtils.PATH_POPULAR;
                 loadData();
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         if (id == R.id.menu_sort_rating) {
-            if (sortingMode != NetworkUtils.PATH_RATING) {
+            if (sortingMode.equals(NetworkUtils.PATH_RATING)) {
                 // Reload only if the mode changed
                 sortingMode = NetworkUtils.PATH_RATING;
                 loadData();
